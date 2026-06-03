@@ -1,0 +1,11 @@
+CREDIT RISK PREDICTION MODEL RESULTS
+-----------------------------------
+Accuracy  : 0.9298
+Precision : 0.9752
+Recall    : 0.7051
+F1 Score  : 0.8184
+ROC-AUC   : 0.8499
+
+Confusion Matrix:
+[[4420   23]
+ [ 379  906]]

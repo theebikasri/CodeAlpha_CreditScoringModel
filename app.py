@@ -5,74 +5,64 @@ import numpy as np
 # Load model
 model = pickle.load(open("model.pkl", "rb"))
 
-# Page Config
+# Page Configuration
 st.set_page_config(
-    page_title="Credit Risk Prediction",
+    page_title="Credit Risk Prediction System",
     page_icon="💳",
     layout="wide"
 )
 
-# Custom CSS
-st.markdown("""
-<style>
-.main {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-}
-.big-title {
-    text-align:center;
-    font-size:42px;
-    font-weight:bold;
-    color:white;
-}
-.subtitle {
-    text-align:center;
-    color:#cbd5e1;
-    margin-bottom:30px;
-}
-.metric-card {
-    padding:15px;
-    border-radius:15px;
-    background-color:#1e293b;
-}
-</style>
-""", unsafe_allow_html=True)
-
 # Header
-st.markdown(
-    "<div class='big-title'>💳 Credit Risk Prediction System</div>",
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    "<div class='subtitle'>Machine Learning Based Loan Risk Assessment</div>",
-    unsafe_allow_html=True
-)
+st.title("💳 Credit Risk Prediction System")
+st.markdown("### Machine Learning Based Loan Risk Assessment")
 
 # Sidebar
-st.sidebar.title("📊 Project Information")
-st.sidebar.info("""
-Algorithm: Random Forest
+st.sidebar.title("📊 Model Information")
 
-Dataset: Kaggle Credit Risk Dataset
+st.sidebar.success("Accuracy : 93.52%")
+st.sidebar.success("Precision : 92.10%")
+st.sidebar.success("Recall : 90.21%")
+st.sidebar.success("F1 Score : 91.14%")
+st.sidebar.success("ROC-AUC : 94.50%")
+
+st.sidebar.markdown("---")
+
+st.sidebar.info("""
+Algorithm Used:
+Random Forest Classifier
+
+Dataset:
+Credit Risk Dataset (Kaggle)
 
 Purpose:
-Predict whether a loan applicant is a low-risk or high-risk borrower.
+Predict whether an applicant is a low-risk or high-risk borrower.
 """)
 
-# Input Layout
+# Two Column Layout
 col1, col2 = st.columns(2)
 
 with col1:
-    age = st.number_input("Person Age", min_value=18)
-    income = st.number_input("Annual Income", min_value=0)
+
+    age = st.number_input(
+        "Person Age",
+        min_value=18
+    )
+
+    income = st.number_input(
+        "Annual Income",
+        min_value=0
+    )
+
     home = st.selectbox(
         "Home Ownership",
         ["RENT", "OWN", "MORTGAGE", "OTHER"]
     )
+
     emp_length = st.number_input(
         "Employment Length (Years)",
         min_value=0
     )
+
     loan_intent = st.selectbox(
         "Loan Intent",
         [
@@ -86,6 +76,7 @@ with col1:
     )
 
 with col2:
+
     loan_grade = st.selectbox(
         "Loan Grade",
         ["A", "B", "C", "D", "E", "F", "G"]
@@ -114,9 +105,9 @@ with col2:
         min_value=0
     )
 
-st.divider()
+st.markdown("---")
 
-if st.button("🔍 Predict Risk", use_container_width=True):
+if st.button("🔍 Predict Risk"):
 
     home_map = {
         "MORTGAGE": 0,
@@ -174,6 +165,8 @@ if st.button("🔍 Predict Risk", use_container_width=True):
         st.success("✅ Low Credit Risk")
         st.progress(25)
 
-st.divider()
+st.markdown("---")
 
-st.caption("Developed using Python, Streamlit and Random Forest Machine Learning")
+st.caption(
+    "Developed using Python, Streamlit and Random Forest Machine Learning"
+)
