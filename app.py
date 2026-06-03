@@ -1,23 +1,86 @@
 import streamlit as st
 import pickle
 import numpy as np
+import base64
 
-# Load model
-model = pickle.load(open("model.pkl", "rb"))
-
-# Page Configuration
+# Page Config
 st.set_page_config(
     page_title="Credit Risk Prediction System",
     page_icon="💳",
-    layout="wide"
+    layout="centered"
 )
 
+# Background Image
+def set_background():
+    with open("background.png", "rb") as image_file:
+        encoded = base64.b64encode(image_file.read()).decode()
+
+    st.markdown(
+        f"""
+        <style>
+
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+
+        [data-testid="stSidebar"] {{
+            background-color: rgba(0,0,0,0.75);
+        }}
+
+        .main-title {{
+            text-align: center;
+            color: white;
+            font-size: 80px;
+            font-weight: bold;
+        }}
+
+        .sub-title {{
+            text-align: center;
+            color: white;
+            font-size: 34px;
+            margin-bottom: 30px;
+        }}
+
+        label {{
+            font-size: 24px !important;
+            font-weight: bold !important;
+            color: white !important;
+        }}
+
+        .stButton > button {{
+            width: 100%;
+            height: 70px;
+            font-size: 32px;
+            font-weight: bold;
+            border-radius: 12px;
+        }}
+
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+set_background()
+
+# Load Model
+model = pickle.load(open("model.pkl", "rb"))
+
 # Header
-st.title("💳 Credit Risk Prediction System")
-st.markdown("### Machine Learning Based Loan Risk Assessment")
+st.markdown(
+    "<div class='main-title'>💳 Credit Risk Prediction System</div>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<div class='sub-title'>Machine Learning Based Loan Risk Assessment</div>",
+    unsafe_allow_html=True
+)
 
 # Sidebar
-st.sidebar.title("📊 Model Information")
+st.sidebar.title("📊 Model Performance")
 
 st.sidebar.success("Accuracy : 93.52%")
 st.sidebar.success("Precision : 92.10%")
@@ -38,76 +101,85 @@ Purpose:
 Predict whether an applicant is a low-risk or high-risk borrower.
 """)
 
-# Two Column Layout
-col1, col2 = st.columns(2)
+# Form
+left_space, main_col, right_space = st.columns([1,8,1])
 
-with col1:
+with main_col:
+        st.markdown("<br>", unsafe_allow_html=True)
 
-    age = st.number_input(
-        "Person Age",
-        min_value=18
-    )
+age = st.number_input(
+    "Person Age",
+    min_value=18,
+    max_value=100,
+    value=30
+)
 
-    income = st.number_input(
-        "Annual Income",
-        min_value=0
-    )
+income = st.number_input(
+    "Annual Income",
+    min_value=0,
+    value=50000
+)
 
-    home = st.selectbox(
-        "Home Ownership",
-        ["RENT", "OWN", "MORTGAGE", "OTHER"]
-    )
+home = st.selectbox(
+    "Home Ownership",
+    ["RENT", "OWN", "MORTGAGE", "OTHER"]
+)
 
-    emp_length = st.number_input(
-        "Employment Length (Years)",
-        min_value=0
-    )
+emp_length = st.number_input(
+    "Employment Length (Years)",
+    min_value=0,
+    value=2
+)
 
-    loan_intent = st.selectbox(
-        "Loan Intent",
-        [
-            "PERSONAL",
-            "EDUCATION",
-            "MEDICAL",
-            "VENTURE",
-            "HOMEIMPROVEMENT",
-            "DEBTCONSOLIDATION"
-        ]
-    )
+loan_intent = st.selectbox(
+    "Loan Intent",
+    [
+        "PERSONAL",
+        "EDUCATION",
+        "MEDICAL",
+        "VENTURE",
+        "HOMEIMPROVEMENT",
+        "DEBTCONSOLIDATION"
+    ]
+)
 
-with col2:
+loan_grade = st.selectbox(
+    "Loan Grade",
+    ["A", "B", "C", "D", "E", "F", "G"]
+)
 
-    loan_grade = st.selectbox(
-        "Loan Grade",
-        ["A", "B", "C", "D", "E", "F", "G"]
-    )
+loan_amnt = st.number_input(
+    "Loan Amount",
+    min_value=0,
+    value=10000
+)
 
-    loan_amnt = st.number_input(
-        "Loan Amount",
-        min_value=0
-    )
+loan_int_rate = st.number_input(
+    "Interest Rate",
+    value=10.0
+)
 
-    loan_int_rate = st.number_input(
-        "Interest Rate"
-    )
+loan_percent_income = st.number_input(
+    "Loan Percent Income",
+    value=0.20
+)
 
-    loan_percent_income = st.number_input(
-        "Loan Percent Income"
-    )
+default_file = st.selectbox(
+    "Default On File",
+    ["N", "Y"]
+)
 
-    default_file = st.selectbox(
-        "Default On File",
-        ["N", "Y"]
-    )
+cred_hist = st.number_input(
+    "Credit History Length",
+    min_value=0,
+    value=5
+)
 
-    cred_hist = st.number_input(
-        "Credit History Length",
-        min_value=0
-    )
+st.markdown("<br>", unsafe_allow_html=True)
 
-st.markdown("---")
+predict = st.button("🔍 Predict Credit Risk")
 
-if st.button("🔍 Predict Risk"):
+if predict:
 
     home_map = {
         "MORTGAGE": 0,
@@ -156,14 +228,12 @@ if st.button("🔍 Predict Risk"):
 
     prediction = model.predict(features)
 
-    st.subheader("Prediction Result")
+    st.markdown("## Prediction Result")
 
     if prediction[0] == 1:
         st.error("❌ High Credit Risk")
-        st.progress(85)
     else:
         st.success("✅ Low Credit Risk")
-        st.progress(25)
 
 st.markdown("---")
 
